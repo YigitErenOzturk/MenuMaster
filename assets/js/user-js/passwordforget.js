@@ -1,5 +1,5 @@
 document.getElementById("forgot-password-form").addEventListener("submit", function(event) {
-    event.preventDefault(); // Sayfanın yenilenmesini engelle
+    event.preventDefault(); 
 
     const email = document.getElementById("email").value;
     const responseMessage = document.getElementById("response-message");

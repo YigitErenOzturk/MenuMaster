@@ -3,20 +3,21 @@ document.addEventListener("DOMContentLoaded", async function () {
     const reviewsList = document.querySelector(".review-list");
     const favoritesList = document.querySelector(".favorite-list");
 
-    // Controlling that user login or not
+    // Get logged-in username
     const username = localStorage.getItem("loggedInUser");
 
+    // If user is not logged in, show alert and redirect to login page
     if (!username) {
         alert("Please log in first!");
-        window.location.href = "../userfiles/user-login.html"; // Send to login page
+        window.location.href = "../userfiles/user-login.html"; // Redirect to login page
         return;
     }
 
     try {
-        // API URL - User İnformations
+        // API URL - User Information
         const apiUrl = `http://192.168.1.15:5000/api/users/profile?username=${username}`;
 
-        // Take informations
+        // Fetch user data
         const response = await fetch(apiUrl, {
             method: "GET",
             headers: {
@@ -30,26 +31,22 @@ document.addEventListener("DOMContentLoaded", async function () {
             throw new Error(userData.message || "Failed to fetch user data");
         }
 
-        // Update User İnformations
+        // Update User Information
         userProfileSection.innerHTML = `
             <p><strong>Name:</strong> ${userData.name}</p>
             <p><strong>Email:</strong> ${userData.email}</p>
             <p><strong>City:</strong> ${userData.city || "Not specified"}</p>
         `;
 
-        // Take User Comments
-        if (userData.reviews && userData.reviews.length > 0) {
-            reviewsList.innerHTML = userData.reviews.map(review => `<li>${review.text} ⭐⭐⭐⭐</li>`).join('');
-        } else {
-            reviewsList.innerHTML = "<li>No reviews yet.</li>";
-        }
+        // Display User Reviews
+        reviewsList.innerHTML = userData.reviews?.length
+            ? userData.reviews.map(review => `<li>${review.text} ⭐⭐⭐⭐</li>`).join('')
+            : "<li>No reviews yet.</li>";
 
-        // Take User Favourites Restaurants
-        if (userData.favorites && userData.favorites.length > 0) {
-            favoritesList.innerHTML = userData.favorites.map(restaurant => `<li>${restaurant.name}</li>`).join('');
-        } else {
-            favoritesList.innerHTML = "<li>No favorite restaurants.</li>";
-        }
+        // Display User Favorite Restaurants
+        favoritesList.innerHTML = userData.favorites?.length
+            ? userData.favorites.map(restaurant => `<li>${restaurant.name}</li>`).join('')
+            : "<li>No favorite restaurants.</li>";
 
     } catch (error) {
         console.error("Error fetching user profile:", error);
@@ -79,7 +76,7 @@ async function confirmDelete() {
 
             alert("Your account has been deleted.");
             localStorage.removeItem("loggedInUser"); // Logout
-            window.location.href = '../index.html'; // Send Main Page
+            window.location.href = '../index.html'; // Redirect to main page
         } catch (error) {
             console.error("Error deleting account:", error);
             alert("Failed to delete account. Please try again.");
